@@ -74,12 +74,21 @@ for (i in 1:30) {
 }
 type
 ```
+
 ```{r}
 actor=rep(NA,30)
 for (i in 1:30) {
   actor[i]=events$content[[i]]$actor$login
 }
 actor
+```
+
+```{r}
+repo=rep(NA,30)
+for (i in 1:30) {
+  repo[i]=events$content[[i]]$repo$name
+}
+repo
 ```
 
 ```{r}
@@ -91,7 +100,15 @@ org
 ```
 
 ```{r}
-df=as.data.frame(cbind(type, actor, org))
+payload=rep(NULL,30)
+for (i in 1:30) {
+  payload[i]=ifelse(length(events$content[[i]]$payload$size)==0, NA,events$content[[i]]$payload$size)
+}
+payload
+```
+
+```{r}
+df=as.data.frame(cbind(type, payload, actor, org,repo))
 df
 ````
 
@@ -100,25 +117,49 @@ library(RColorBrewer)
 g1 <- ggplot(df, aes(type)) + 
   geom_bar()+
   labs(title="Event Type",
-        y = "Freqency")
+        y = "Freqency")+
+  theme(axis.text.x = element_text(angle = 90))
 g1 + scale_fill_brewer(palette="Set2")
 ```
 
 ```{r}
-g2 <- ggplot(df, aes(actor)) + 
+g2 <- ggplot(df, aes(payload)) + 
   geom_bar()+
-  labs(title="Actor Name",
-        y = "Freqency")+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  labs(title="Payload Size",
+        y = "Freqency")
 g2 + scale_fill_brewer(palette="Set2")
 ```
 
 ```{r}
-g3 <- ggplot(df, aes(org)) + 
+g3 <- ggplot(df, aes(actor)) + 
+  geom_bar()+
+  labs(title="Actor Name",
+        y = "Freqency")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+g3 + scale_fill_brewer(palette="Set2")
+```
+
+```{r}
+g4 <- ggplot(df, aes(org)) + 
   geom_bar()+
   labs(title="Organization Name",
         y = "Freqency")+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
-g3 + scale_fill_brewer(palette="Set2")
+g4 + scale_fill_brewer(palette="Set2")
+```
+
+```{r}
+g5 <- ggplot(df, aes(repo)) + 
+  geom_bar()+
+  labs(title="Repository Name",
+        y = "Freqency")+
+  theme(text = element_text(size=8),
+    axis.text.x = element_text(angle = 90, hjust = 1))
+g5 + scale_fill_brewer(palette="Set2")
+```
+
+
+```{r}
+events$content
 ```
 
