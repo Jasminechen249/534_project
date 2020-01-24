@@ -1,0 +1,124 @@
+---
+title: "DATA534Project"
+author: "Jasmine Chen"
+date: '2020-01-23'
+output: pdf_document
+---
+```{r}
+#install.packages("jsonlite")
+library(jsonlite)
+#install.packages("httr")
+library(httr)
+```
+
+```{r}
+# https://api.github.com
+# /events
+
+# set a user agent to identify the client
+ua <- user_agent("http://github.com/Jasminechen249")
+```
+
+```{r}
+# create a function to interact with the github events api
+github_api <- function(path) {
+  url <- modify_url("https://api.github.com", path = path)
+  GET(url)
+  resp <- GET(url)
+  
+  # raise error if the reponse is not in json
+  if (http_type(resp) != "application/json") {
+    stop("API did not return json", call. = FALSE)
+  }
+
+  # parse response with jsonlite
+  parsed <- jsonlite::fromJSON(content(resp, "text"), simplifyVector = FALSE)
+  
+  # raise error if the request fails    
+  if (http_error(resp)) {
+    stop(
+      sprintf(
+        "GitHub API request failed /events",
+        status_code(resp),
+        parsed$message,
+        parsed$documentation_url
+      ),
+      call. = FALSE
+    )
+  }
+
+  structure(
+    list(
+      content = parsed,
+      path = path,
+      response = resp
+    ),
+    class = "github_api"
+  )
+}
+
+print.github_api <- function(x, ...) {
+  cat("<GitHub ", x$path, ">\n", sep = "")
+  str(x$content)
+  invisible(x)
+}
+
+events <-github_api("/events")
+```
+
+```{r}
+library(ggplot2)
+type=rep(NA,30)
+for (i in 1:30) {
+  type[i]=events$content[[i]]$type
+}
+type
+```
+```{r}
+actor=rep(NA,30)
+for (i in 1:30) {
+  actor[i]=events$content[[i]]$actor$login
+}
+actor
+```
+
+```{r}
+org=rep(NULL,30)
+for (i in 1:30) {
+  org[i]=ifelse(length(events$content[[i]]$org$login)==0, NA,events$content[[i]]$org$login)
+}
+org
+```
+
+```{r}
+df=as.data.frame(cbind(type, actor, org))
+df
+````
+
+```{r}
+library(RColorBrewer)
+g1 <- ggplot(df, aes(type)) + 
+  geom_bar()+
+  labs(title="Event Type",
+        y = "Freqency")
+g1 + scale_fill_brewer(palette="Set2")
+```
+
+```{r}
+g2 <- ggplot(df, aes(actor)) + 
+  geom_bar()+
+  labs(title="Actor Name",
+        y = "Freqency")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+g2 + scale_fill_brewer(palette="Set2")
+```
+
+```{r}
+g3 <- ggplot(df, aes(org)) + 
+  geom_bar()+
+  labs(title="Organization Name",
+        y = "Freqency")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+g3 + scale_fill_brewer(palette="Set2")
+```
+
