@@ -1,0 +1,20 @@
+---
+title: "Vignette: git_events"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This subpackage collects information about the recent events of a public git hub repository. It is limited to the past thirty up to nintey days before the function call. This package has four functions: get_git_events, create_events_df, get_events_plots, and git_events_list.
+
+The get_git_events function provides lists of data for a public repository's events. 
+
+The create_events_df function creates a data frame from the output of get_git_events with the following columns: type, actor, payload. 
+
+The get_events_plots function creates two plots. The first plot is a histogram of event type. The second is a histogram of payload.

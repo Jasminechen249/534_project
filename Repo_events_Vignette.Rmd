@@ -1,0 +1,24 @@
+---
+title: "Vignette: Repo_events"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Repo Events:
+
+This subpackage has several functions for the collection of records of git events. There are three functions: get_repo_events, create_repo_df, and get_repo_log. The first two functions collect information from a public git hub repository, and then are called by the third to create a log of events.
+
+The function get_repo_events obtains thirty previous events from the past nintey days in the form of a list of lists from a public git hub repository.
+
+The function create_repo_df assembles the list of lists of git hub events into a data frame for further processing. 
+
+The get_repo_log function selects the event ID, event type, actor, message, and time of git events from the data frame created by the create_repo_df function. It is limited to thirty previous events from the past nintey days.
